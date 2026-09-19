@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { api, formatApiErrorDetail } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -50,9 +51,20 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-12 bg-white">
+    <motion.div
+      initial={{ opacity: 0, x: 60 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 60 }}
+      transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen grid lg:grid-cols-12 bg-white overflow-hidden"
+    >
       {/* Full Left Side Seamless Form Panel */}
-      <div className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-12 lg:p-16 xl:p-20 bg-white min-h-screen overflow-y-auto order-2 lg:order-1">
+      <motion.div
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.42, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-12 lg:p-16 xl:p-20 bg-white min-h-screen overflow-y-auto order-2 lg:order-1"
+      >
         
         {/* Top Bar for Form Side */}
         <div className="flex items-center justify-between">
@@ -224,10 +236,15 @@ export default function Signup() {
           <span>Enterprise 256-Bit TLS Security</span>
           <span>© {new Date().getFullYear()} Eco-Precision</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Visual Brand Right Panel */}
-      <div className="relative hidden lg:flex lg:col-span-5 flex-col justify-between p-12 xl:p-16 bg-gradient-to-br from-[#004883] via-[#0060ab] to-[#0091FF] text-white overflow-hidden order-1 lg:order-2">
+      <motion.div
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.42, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        className="relative hidden lg:flex lg:col-span-5 flex-col justify-between p-12 xl:p-16 bg-gradient-to-br from-[#004883] via-[#0060ab] to-[#0091FF] text-white overflow-hidden order-1 lg:order-2"
+      >
         <div
           className="absolute inset-0 opacity-15 mix-blend-overlay"
           style={{
@@ -278,7 +295,7 @@ export default function Signup() {
         <div className="relative z-10 text-xs text-cyan-200/70 font-mono">
           ISO 14001 &amp; Circular Economy Standards Compliant
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

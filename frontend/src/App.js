@@ -1,5 +1,6 @@
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "./components/ui/sonner";
 import Login from "./pages/Login";
@@ -27,31 +28,38 @@ function Protected({ children }) {
 
 function AppRoutes() {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const isAuthRoute = location.pathname === "/login" || location.pathname === "/signup";
+  const routeKey = isAuthRoute ? location.pathname : "app-layout";
+
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route
-        element={
-          <Protected>
-            <Layout />
-          </Protected>
-        }
-      >
-        <Route path="/" element={user?.role === "client" ? <Boardroom /> : user?.role === "partner" ? <PartnerPortal /> : <Dashboard />} />
-        <Route path="/partner" element={<PartnerPortal />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/procurement" element={<Procurement />} />
-        <Route path="/ledger" element={<Ledger />} />
-        <Route path="/discrepancies" element={<Discrepancies />} />
-        <Route path="/approvals" element={<Approvals />} />
-        <Route path="/master-data" element={<MasterData />} />
-        <Route path="/users" element={<UsersPage />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/boardroom" element={<Boardroom />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={routeKey}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          element={
+            <Protected>
+              <Layout />
+            </Protected>
+          }
+        >
+          <Route path="/" element={user?.role === "client" ? <Boardroom /> : user?.role === "partner" ? <PartnerPortal /> : <Dashboard />} />
+          <Route path="/partner" element={<PartnerPortal />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/procurement" element={<Procurement />} />
+          <Route path="/ledger" element={<Ledger />} />
+          <Route path="/discrepancies" element={<Discrepancies />} />
+          <Route path="/approvals" element={<Approvals />} />
+          <Route path="/master-data" element={<MasterData />} />
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/boardroom" element={<Boardroom />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AnimatePresence>
   );
 }
 
