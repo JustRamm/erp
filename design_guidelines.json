@@ -1,0 +1,111 @@
+{
+  "identity_and_theme": {
+    "name": "Eco-Precision Enterprise",
+    "theme_mode": "Clean High-Tech Modernism (Oceanic Glassmorphism)",
+    "design_vibe": "Industrial yet pristine visual language tailored for circular manufacturing, resource tracking, and high-precision ERP/MES operations. Fuses Scandinavian cleanroom clarity with maritime technical telemetry, deep breathing room, ultra-fine dividers, and subtle cyan-tinted atmospheric light.",
+    "use_case": "Full lifecycle recycled-plastic production, MES, traceability, and inventory ERP (Granules → Extrusion/Lumber/Sheets → Finished Products → Public Deployments) for floor operators, managers, partners, and boardroom executives."
+  },
+  "colors": {
+    "surface": "#f9f9ff",
+    "surface_dim": "#cedaf3",
+    "surface_bright": "#f9f9ff",
+    "surface_mist": "#F8FAFC",
+    "surface_card": "#FFFFFF",
+    "surface_container_lowest": "#ffffff",
+    "surface_container_low": "#f0f3ff",
+    "surface_container": "#e7eeff",
+    "surface_container_high": "#dee8ff",
+    "surface_container_highest": "#d7e3fb",
+    "on_surface": "#101c2d",
+    "on_surface_variant": "#404753",
+    "inverse_surface": "#253143",
+    "inverse_on_surface": "#ebf1ff",
+    "outline": "#707785",
+    "border_subtle": "#E2E8F0",
+    "pill_fill_ice": "#EBF5FA",
+    "text_navy": "#010B1C",
+    "text_slate": "#334155",
+    "primary": "#0091FF",
+    "primary_dark": "#005da7",
+    "primary_container": "#0076d1",
+    "on_primary": "#ffffff",
+    "secondary": "#98CAE4",
+    "secondary_dark": "#31647b",
+    "tertiary": "#5AAAD4",
+    "tertiary_dark": "#006386",
+    "accents": {
+      "semantic_recycled_emerald": "#10B981",
+      "semantic_timber_amber": "#D97706",
+      "semantic_process_cyan": "#0091FF",
+      "semantic_alert_crimson": "#EF4444",
+      "semantic_esg_indigo": "#4F46E5"
+    },
+    "role_badges": {
+      "admin": "bg-indigo-50 text-indigo-700 border-indigo-200",
+      "operations": "bg-amber-50 text-amber-800 border-amber-200",
+      "production": "bg-sky-50 text-sky-700 border-sky-200",
+      "finance": "bg-emerald-50 text-emerald-800 border-emerald-200",
+      "partner": "bg-blue-50 text-blue-700 border-blue-200",
+      "client": "bg-violet-50 text-violet-700 border-violet-200"
+    }
+  },
+  "typography": {
+    "heading_font": "Plus Jakarta Sans, sans-serif",
+    "body_font": "Inter, sans-serif",
+    "mono_font": "JetBrains Mono, monospace",
+    "scale": {
+      "display_hero": "text-4xl sm:text-5xl font-bold tracking-[-0.03em] leading-tight font-head",
+      "headline_xl": "text-3xl sm:text-4xl font-bold tracking-[-0.02em] leading-snug font-head",
+      "headline_lg": "text-2xl sm:text-3xl font-semibold tracking-[-0.015em] font-head",
+      "headline_md": "text-lg sm:text-xl font-semibold tracking-[-0.01em] font-head",
+      "body_lg": "text-base font-normal leading-relaxed font-body",
+      "body_md": "text-sm font-normal leading-normal font-body",
+      "body_sm": "text-xs font-normal leading-normal font-body",
+      "mono_metric_lg": "font-mono text-2xl sm:text-3xl font-semibold tracking-[-0.02em]",
+      "mono_metric_md": "font-mono text-base font-medium tracking-[-0.01em]",
+      "mono_telemetry_sm": "font-mono text-xs font-normal",
+      "label_caps": "text-[11px] font-semibold tracking-[0.06em] uppercase font-body text-slate-500"
+    }
+  },
+  "elevation_and_depth": {
+    "tier_0_canvas": "bg-[#F9F9FF] / bg-[#F8FAFC] flat",
+    "tier_1_cards": "bg-white border border-[#E2E8F0] shadow-[0_4px_20px_-2px_rgba(0,145,255,0.06),0_2px_6px_-1px_rgba(1,11,28,0.03)] rounded-2xl",
+    "tier_2_nav_headers": "bg-white/85 backdrop-blur-md border-b border-[#E2E8F0]/80",
+    "tier_3_modals": "bg-white border border-[#E2E8F0] shadow-[0_20px_40px_-10px_rgba(1,11,28,0.08),0_8px_16px_-4px_rgba(0,145,255,0.08)] rounded-2xl"
+  },
+  "shapes": {
+    "cards_enclosures": "rounded-2xl (16px / 1rem)",
+    "buttons_inputs": "rounded-lg (8px / 0.5rem)",
+    "badges_pills": "rounded-full (9999px)"
+  },
+  "spacing_and_layout": {
+    "gutter": "1.5rem (24px)",
+    "gutter_mobile": "0.75rem (12px)",
+    "margin": "2rem (32px)",
+    "margin_mobile": "1rem (16px)",
+    "touch_target_min": "min-h-[44px] min-w-[44px]",
+    "button_padding": "px-5 py-2.5 text-sm font-semibold",
+    "card_padding": "p-5 sm:p-6",
+    "grid_dashboard": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5",
+    "sidebar_width": "w-64"
+  },
+  "components": {
+    "primary_button": "bg-gradient-to-br from-[#3195C9] to-[#0091FF] text-white font-medium rounded-lg shadow-sm hover:shadow-[0_4px_14px_rgba(0,145,255,0.35)] transition-all",
+    "secondary_button": "bg-white text-[#010B1C] border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#98CAE4] transition-all",
+    "ghost_button": "text-[#334155] hover:bg-[#EBF5FA] hover:text-[#0091FF] rounded-lg transition-all",
+    "status_pill_intake": "bg-[#EBF5FA] border border-[#98CAE4] text-[#0091FF] font-mono text-xs rounded-full px-3 py-1",
+    "status_pill_recycled": "bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs rounded-full px-3 py-1 flex items-center gap-1.5",
+    "status_pill_warning": "bg-amber-50 border border-amber-200 text-amber-800 font-mono text-xs rounded-full px-3 py-1 flex items-center gap-1.5",
+    "status_pill_alert": "bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs rounded-full px-3 py-1 flex items-center gap-1.5",
+    "input_field": "h-10 px-3 rounded-lg border border-[#E2E8F0] bg-white text-[#010B1C] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/15 transition-all text-sm"
+  },
+  "universal_guidelines": [
+    "Follow the Eco-Precision Enterprise clean modern aesthetic: dual-surface white on mist, oceanic glassmorphism, bright pure white cards.",
+    "Use Plus Jakarta Sans for titles/headers, Inter for body/forms, and JetBrains Mono for SKUs, batch IDs, metrics, and ledger hashes.",
+    "Ensure cards use rounded-2xl with subtle cyan ambient shadows and 1px #E2E8F0 borders.",
+    "Primary CTAs use the linear gradient from #3195C9 to #0091FF.",
+    "Badges and status chips must use rounded-full pills.",
+    "Maintain high visual contrast between text (#010B1C / #334155) and card backgrounds (#FFFFFF).",
+    "Use Sonner for toast notifications and ensure all interactive elements retain data-testid attributes."
+  ]
+}
