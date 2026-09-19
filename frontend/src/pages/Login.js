@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { formatApiErrorDetail } from "../lib/api";
 import { Button } from "../components/ui/button";
@@ -106,9 +106,16 @@ export default function Login() {
             </div>
             <span className="font-head text-lg font-bold text-[#010B1C]">ECO-PRECISION</span>
           </div>
-          <div className="hidden lg:flex items-center gap-2 text-xs font-mono text-slate-400 ml-auto">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>Platform Node Active · SHA-256 Ledger</span>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-xs text-slate-500 hidden sm:inline font-body">Need an enterprise account?</span>
+            <Link
+              to="/signup"
+              data-testid="goto-signup-btn"
+              className="text-xs font-semibold text-[#0091FF] hover:text-[#005DA7] hover:underline px-3 py-1.5 rounded-lg border border-[#E2E8F0] hover:border-[#98CAE4] transition-all"
+            >
+              Sign Up
+            </Link>
           </div>
         </div>
 
@@ -187,6 +194,13 @@ export default function Login() {
               )}
             </Button>
           </form>
+
+          <div className="mt-4 text-center text-xs text-slate-500 font-body">
+            Don&apos;t have an account?{" "}
+            <Link to="/signup" className="text-[#0091FF] font-semibold hover:underline">
+              Register organization
+            </Link>
+          </div>
 
           {/* Quick Demo Profiles */}
           <div className="mt-10 border-t border-[#E2E8F0] pt-6">
