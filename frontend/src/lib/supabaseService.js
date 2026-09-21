@@ -4,63 +4,31 @@ import { supabase } from "./supabase";
 // 1. AUTHENTICATION & PROFILE
 // ==========================================
 
-const DEFAULT_ENTERPRISE_USERS = [
-  { id: "10000000-0000-0000-0000-000000000001", email: "admin@recyclops.com", name: "System Admin", role: "admin", active: true },
-  { id: "10000000-0000-0000-0000-000000000002", email: "ops@recyclops.com", name: "Operations Manager", role: "operations", active: true },
-  { id: "10000000-0000-0000-0000-000000000003", email: "prod@recyclops.com", name: "Production Supervisor", role: "production", active: true },
-  { id: "10000000-0000-0000-0000-000000000004", email: "finance@recyclops.com", name: "Finance Lead", role: "finance", active: true },
-  { id: "10000000-0000-0000-0000-000000000005", email: "partner@recyclops.com", name: "Rajesh (GreenCycle)", role: "partner", active: true, partner_id: "44444444-4444-4444-4444-444444444444", location_id: "44444444-4444-4444-4444-444444444444" },
-  { id: "10000000-0000-0000-0000-000000000006", email: "client@recyclops.com", name: "Smart City Kochi", role: "client", active: true },
-];
-
 export async function loginUser(email, password) {
   const cleanEmail = (email || "").toLowerCase().trim();
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
-    if (!error && data?.user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", data.user.id)
-        .maybeSingle();
-        
-      const user = {
-        id: data.user.id,
-        email: data.user.email,
-        name: profile?.name || data.user.user_metadata?.name || cleanEmail.split("@")[0],
-        role: profile?.role || data.user.user_metadata?.role || "operations",
-        partner_id: profile?.partner_id,
-        location_id: profile?.location_id
-      };
-      
-      return { token: data.session?.access_token || "auth-token", user };
-    }
-  } catch (err) {
-    console.warn("Supabase auth attempted, checking fallback:", err?.message);
+  const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+  if (error) throw error;
+  
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", data.user.id)
+    .maybeSingle();
+    
+  if (profileError) {
+    console.error("Error fetching user profile from Supabase:", profileError);
   }
 
-  // Enterprise accounts fallback
-  const found = DEFAULT_ENTERPRISE_USERS.find(u => u.email === cleanEmail);
-  if (found) {
-    return {
-      token: "enterprise-token-" + found.id,
-      user: { ...found }
-    };
-  }
-
-  // Also check if any profile exists with that email in Supabase
-  try {
-    const { data: prof } = await supabase.from("profiles").select("*").eq("email", cleanEmail).maybeSingle();
-    if (prof) {
-      return {
-        token: "enterprise-token-" + prof.id,
-        user: { ...prof }
-      };
-    }
-  } catch (e) {}
-
-  throw new Error("Invalid login credentials. Please check your email and password.");
+  const user = {
+    id: data.user.id,
+    email: data.user.email,
+    name: profile?.name || data.user.user_metadata?.name || cleanEmail.split("@")[0],
+    role: profile?.role || data.user.user_metadata?.role || "operations",
+    partner_id: profile?.partner_id || null,
+    location_id: profile?.location_id || null
+  };
+  
+  return { token: data.session?.access_token, user };
 }
 
 export async function getCurrentProfile() {
@@ -578,15 +546,12 @@ export async function updateSettings(updates) {
 }
 
 export async function fetchUsers() {
-  try {
-    const { data, error } = await supabase.from("profiles").select("*").order("name", { ascending: true });
-    if (!error && data && data.length > 0) {
-      return data;
-    }
-  } catch (error) {
+  const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+  if (error) {
     console.error("Error fetching profiles from Supabase:", error);
+    return [];
   }
-  return DEFAULT_ENTERPRISE_USERS;
+  return data || [];
 }
 
 export async function createUser(user) {
