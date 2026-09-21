@@ -68,14 +68,14 @@ export default function Layout() {
       <aside className="hidden md:flex flex-col w-64 border-r border-[#E2E8F0] bg-white p-5 sticky top-0 h-screen shadow-xs">
         <div className="flex items-center gap-3 px-2 mb-8">
           <motion.div
-            whileHover={{ rotate: 90, scale: 1.05 }}
+            whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center shadow-xs cursor-pointer"
+            className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-2 shadow-xs cursor-pointer"
           >
-            <Recycle className="w-5 h-5 text-white" />
+            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
           </motion.div>
           <div>
-            <span className="font-head text-lg font-bold tracking-tight text-[#010B1C] block leading-tight">ECO-PRECISION</span>
+            <span className="font-head text-lg font-bold tracking-tight text-[#010B1C] block leading-tight">CARBON &amp; WHALE</span>
             <span className="font-mono text-[10px] uppercase tracking-widest text-[#0091FF] font-semibold">IMS / MES Platform</span>
           </div>
         </div>
@@ -114,10 +114,10 @@ export default function Layout() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center shadow-xs">
-                    <Recycle className="w-4 h-4 text-white" />
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-1.5 shadow-xs">
+                    <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
                   </div>
-                  <span className="font-head text-base font-bold text-[#010B1C]">ECO-PRECISION</span>
+                  <span className="font-head text-base font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
@@ -154,10 +154,10 @@ export default function Layout() {
             <Menu className="w-5 h-5" />
           </button>
           <div className="md:hidden flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center">
-              <Recycle className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-1.5">
+              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
             </div>
-            <span className="font-head text-sm font-bold text-[#010B1C]">ECO-PRECISION</span>
+            <span className="font-head text-sm font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
           </div>
           <div className="ml-auto flex items-center gap-2.5">
             <DropdownMenu onOpenChange={(o) => o && loadNotes()}>

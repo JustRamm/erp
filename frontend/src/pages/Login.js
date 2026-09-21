@@ -66,11 +66,11 @@ export default function Login() {
         />
         
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md">
-            <Recycle className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center p-2 shadow-md">
+            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
-            <span className="font-head text-2xl font-bold tracking-tight block">ECO-PRECISION</span>
+            <span className="font-head text-2xl font-bold tracking-tight block">CARBON &amp; WHALE</span>
             <span className="font-mono text-xs uppercase tracking-widest text-cyan-200">Lifecycle &amp; Traceability ERP</span>
           </div>
         </div>
@@ -118,10 +118,10 @@ export default function Login() {
         {/* Top Bar for Right Side */}
         <div className="flex items-center justify-between">
           <div className="lg:hidden flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center">
-              <Recycle className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-2 shadow-xs">
+              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
             </div>
-            <span className="font-head text-lg font-bold text-[#010B1C]">ECO-PRECISION</span>
+            <span className="font-head text-lg font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
