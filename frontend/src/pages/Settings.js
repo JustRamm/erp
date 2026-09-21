@@ -9,6 +9,8 @@ import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Checkbox } from "../components/ui/checkbox";
+import { StaggerContainer, StaggerItem } from "../components/PageTransition";
+import { motion } from "framer-motion";
 import { Settings as Cog, Building2, Bell, Shield, Database } from "lucide-react";
 import { SettingsSkeleton } from "../components/PageSkeleton";
 
@@ -53,90 +55,102 @@ export default function Settings() {
         </Button>
       </div>
 
-      <div className="space-y-6">
-        <Section icon={Building2} title="Enterprise Profile">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-600">Company / Facility Name</Label>
-              <Input data-testid="settings-company-input" value={s.company_name || ""} onChange={(e) => set("company_name", e.target.value)} className="mt-1.5 h-11" />
+      <StaggerContainer className="space-y-6">
+        <StaggerItem>
+          <Section icon={Building2} title="Enterprise Profile">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-600">Company / Facility Name</Label>
+                <Input data-testid="settings-company-input" value={s.company_name || ""} onChange={(e) => set("company_name", e.target.value)} className="mt-1.5 h-11" />
+              </div>
             </div>
-          </div>
-        </Section>
+          </Section>
+        </StaggerItem>
 
-        <Section icon={Bell} title="Stock Telemetry &amp; Alerts">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs font-semibold uppercase tracking-wider text-slate-600">Default Low-Stock Level</Label>
-              <Input data-testid="settings-lowstock-input" type="number" value={s.low_stock_default ?? ""} onChange={(e) => set("low_stock_default", e.target.value)} className="mt-1.5 h-11 font-mono" placeholder="e.g. 100 (blank = none)" />
-              <p className="text-[11px] text-slate-500 mt-1">Fallback threshold when not specified on individual item categories.</p>
+        <StaggerItem>
+          <Section icon={Bell} title="Stock Telemetry &amp; Alerts">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wider text-slate-600">Default Low-Stock Level</Label>
+                <Input data-testid="settings-lowstock-input" type="number" value={s.low_stock_default ?? ""} onChange={(e) => set("low_stock_default", e.target.value)} className="mt-1.5 h-11 font-mono" placeholder="e.g. 100 (blank = none)" />
+                <p className="text-[11px] text-slate-500 mt-1">Fallback threshold when not specified on individual item categories.</p>
+              </div>
             </div>
-          </div>
-          <div className="mt-4 space-y-3">
-            <ToggleRow label="Dispatch notifications on low stock threshold breach" checked={s.notify_low_stock} onChange={(v) => set("notify_low_stock", v)} testid="settings-notify-lowstock" />
-            <ToggleRow label="Dispatch notifications on negative inventory discrepancy logs" checked={s.notify_discrepancy} onChange={(v) => set("notify_discrepancy", v)} testid="settings-notify-disc" />
-          </div>
-        </Section>
+            <div className="mt-4 space-y-3">
+              <ToggleRow label="Dispatch notifications on low stock threshold breach" checked={s.notify_low_stock} onChange={(v) => set("notify_low_stock", v)} testid="settings-notify-lowstock" />
+              <ToggleRow label="Dispatch notifications on negative inventory discrepancy logs" checked={s.notify_discrepancy} onChange={(v) => set("notify_discrepancy", v)} testid="settings-notify-disc" />
+            </div>
+          </Section>
+        </StaggerItem>
 
-        <Section icon={Shield} title="Role Permissions Matrix">
-          <p className="text-xs text-slate-500 mb-4 font-body">Configure capability matrix per enterprise role. Security boundaries are strictly enforced on ledger transactions.</p>
-          <div className="overflow-x-auto rounded-xl border border-[#E2E8F0]">
-            <table className="w-full text-sm">
-              <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                <tr className="text-left">
-                  <th className="p-3 text-xs font-semibold uppercase tracking-wider text-slate-500 font-body">Operational Action</th>
-                  {ROLES.map((r) => <th key={r} className="p-3 text-center"><Badge className={`text-[10px] uppercase font-mono px-2 py-0.5 border ${ROLE_BADGE[r]}`}>{r}</Badge></th>)}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#F1F5F9]">
-                {PERMISSION_ACTIONS.map((a) => (
-                  <tr key={a.key} className="hover:bg-[#F8FAFC]/60 transition-colors">
-                    <td className="p-3 font-medium text-[#010B1C]">{a.label}</td>
-                    {ROLES.map((r) => (
-                      <td key={r} className="p-3 text-center">
-                        <Checkbox
-                          data-testid={`perm-${r}-${a.key}`}
-                          checked={(s.permissions?.[r] || []).includes(a.key)}
-                          onCheckedChange={() => togglePerm(r, a.key)}
-                          disabled={r === "admin"}
-                          className="data-[state=checked]:bg-[#0091FF] data-[state=checked]:border-[#0091FF]"
-                        />
-                      </td>
-                    ))}
+        <StaggerItem>
+          <Section icon={Shield} title="Role Permissions Matrix">
+            <p className="text-xs text-slate-500 mb-4 font-body">Configure capability matrix per enterprise role. Security boundaries are strictly enforced on ledger transactions.</p>
+            <div className="overflow-x-auto rounded-xl border border-[#E2E8F0]">
+              <table className="w-full text-sm">
+                <thead className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                  <tr className="text-left">
+                    <th className="p-3 text-xs font-semibold uppercase tracking-wider text-slate-500 font-body">Operational Action</th>
+                    {ROLES.map((r) => <th key={r} className="p-3 text-center"><Badge className={`text-[10px] uppercase font-mono px-2 py-0.5 border ${ROLE_BADGE[r]}`}>{r}</Badge></th>)}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Section>
+                </thead>
+                <tbody className="divide-y divide-[#F1F5F9]">
+                  {PERMISSION_ACTIONS.map((a) => (
+                    <tr key={a.key} className="hover:bg-[#F8FAFC]/60 transition-colors">
+                      <td className="p-3 font-medium text-[#010B1C]">{a.label}</td>
+                      {ROLES.map((r) => (
+                        <td key={r} className="p-3 text-center">
+                          <Checkbox
+                            data-testid={`perm-${r}-${a.key}`}
+                            checked={(s.permissions?.[r] || []).includes(a.key)}
+                            onCheckedChange={() => togglePerm(r, a.key)}
+                            disabled={r === "admin"}
+                            className="data-[state=checked]:bg-[#0091FF] data-[state=checked]:border-[#0091FF]"
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        </StaggerItem>
 
-        <Section icon={Database} title="Taxonomy Shortcuts">
-          <div className="flex flex-wrap gap-2.5">
-            {["Categories", "Products", "Locations", "Suppliers", "Partners", "Customers"].map((m) => (
-              <Button key={m} variant="outline" onClick={() => navigate("/master-data")} data-testid={`md-shortcut-${m.toLowerCase()}`} className="h-9 text-xs font-medium">
-                {m}
-              </Button>
-            ))}
-          </div>
-        </Section>
-      </div>
+        <StaggerItem>
+          <Section icon={Database} title="Taxonomy Shortcuts">
+            <div className="flex flex-wrap gap-2.5">
+              {["Categories", "Products", "Locations", "Suppliers", "Partners", "Customers"].map((m) => (
+                <Button key={m} variant="outline" onClick={() => navigate("/master-data")} data-testid={`md-shortcut-${m.toLowerCase()}`} className="h-9 text-xs font-medium">
+                  {m}
+                </Button>
+              ))}
+            </div>
+          </Section>
+        </StaggerItem>
+      </StaggerContainer>
     </div>
   );
 }
 
 const Section = ({ icon: Icon, title, children }) => (
-  <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_20px_-2px_rgba(0,145,255,0.06),0_2px_6px_-1px_rgba(1,11,28,0.03)]">
+  <motion.div
+    whileHover={{ y: -1 }}
+    transition={{ duration: 0.15 }}
+    className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_20px_-2px_rgba(0,145,255,0.06),0_2px_6px_-1px_rgba(1,11,28,0.03)] card-lift"
+  >
     <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-[#E2E8F0]">
-      <div className="w-8 h-8 rounded-lg bg-[#EBF5FA] flex items-center justify-center text-[#0091FF]">
+      <div className="w-8 h-8 rounded-xl bg-[#EBF5FA] flex items-center justify-center text-[#0091FF]">
         <Icon className="w-4 h-4" />
       </div>
       <h2 className="font-head text-base font-bold text-[#010B1C]">{title}</h2>
     </div>
     {children}
-  </div>
+  </motion.div>
 );
 
 const ToggleRow = ({ label, checked, onChange, testid }) => (
-  <div className="flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
+  <div className="flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5 hover:bg-white transition-colors duration-150">
     <span className="text-sm font-medium text-[#010B1C]">{label}</span>
     <Switch data-testid={testid} checked={!!checked} onCheckedChange={onChange} />
   </div>

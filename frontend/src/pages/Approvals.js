@@ -5,6 +5,8 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { TableSkeleton } from "../components/PageSkeleton";
+import { StaggerContainer, StaggerItem } from "../components/PageTransition";
+import { motion } from "framer-motion";
 import { ClipboardCheck, CheckCircle2, XCircle, Layers, DollarSign } from "lucide-react";
 
 const TYPE_META = {
@@ -58,42 +60,49 @@ export default function Approvals() {
         </TabsList>
       </Tabs>
 
-      <div className="space-y-3.5">
+      <StaggerContainer className="space-y-3.5">
         {items.map((c) => {
           const m = TYPE_META[c.type] || { label: c.type, icon: ClipboardCheck, color: "text-slate-700 bg-slate-100 border-slate-200" };
           return (
-            <div key={c.id} data-testid={`cr-row-${c.id}`} className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
-              <div className="flex items-center gap-3 flex-wrap">
-                <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${m.color}`}>
-                  <m.icon className="w-3 h-3 mr-1" />
-                  {m.label}
-                </Badge>
-                <span className="text-sm font-semibold text-[#010B1C]">{c.summary}</span>
-                <span className="ml-auto text-xs text-slate-500 font-mono">Requested by {c.requested_by}</span>
-              </div>
-              <div className="mt-2 text-xs text-slate-400 font-mono">
-                {new Date(c.created_at).toLocaleString()}
-                {c.approved_by ? ` · ${c.status} by ${c.approved_by}` : ""}
-              </div>
-              {c.status === "pending" && (
-                <div className="mt-4 flex gap-2.5 pt-3 border-t border-[#E2E8F0]">
-                  <Button onClick={() => act(c.id, "approve")} disabled={busy} data-testid={`cr-approve-${c.id}`} className="h-9 text-xs font-semibold">
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve &amp; Commit
-                  </Button>
-                  <Button onClick={() => act(c.id, "reject")} disabled={busy} data-testid={`cr-reject-${c.id}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
-                    <XCircle className="w-4 h-4 mr-1.5" /> Reject Request
-                  </Button>
+            <StaggerItem key={c.id}>
+              <motion.div
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                data-testid={`cr-row-${c.id}`}
+                className="rounded-2xl border border-[#E2E8F0] bg-white p-5 card-lift shadow-xs"
+              >
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${m.color}`}>
+                    <m.icon className="w-3 h-3 mr-1" />
+                    {m.label}
+                  </Badge>
+                  <span className="text-sm font-semibold text-[#010B1C]">{c.summary}</span>
+                  <span className="ml-auto text-xs text-slate-500 font-mono">Requested by {c.requested_by}</span>
                 </div>
-              )}
-            </div>
+                <div className="mt-2 text-xs text-slate-400 font-mono">
+                  {new Date(c.created_at).toLocaleString()}
+                  {c.approved_by ? ` · ${c.status} by ${c.approved_by}` : ""}
+                </div>
+                {c.status === "pending" && (
+                  <div className="mt-4 flex gap-2.5 pt-3 border-t border-[#E2E8F0]">
+                    <Button onClick={() => act(c.id, "approve")} disabled={busy} data-testid={`cr-approve-${c.id}`} className="h-9 text-xs font-semibold">
+                      <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve &amp; Commit
+                    </Button>
+                    <Button onClick={() => act(c.id, "reject")} disabled={busy} data-testid={`cr-reject-${c.id}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
+                      <XCircle className="w-4 h-4 mr-1.5" /> Reject Request
+                    </Button>
+                  </div>
+                )}
+              </motion.div>
+            </StaggerItem>
           );
         })}
         {items.length === 0 && (
-          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0]">
+          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0] font-mono">
             No {status} change requests found.
           </div>
         )}
-      </div>
+      </StaggerContainer>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "../components/ui/dialog";
+import { StaggerContainer, StaggerItem } from "../components/PageTransition";
+import { motion } from "framer-motion";
 import { CheckCircle2, XCircle, Send, History } from "lucide-react";
 
 const STATUS_BADGE = {
@@ -81,83 +83,86 @@ export default function Discrepancies() {
         </TabsList>
       </Tabs>
 
-      <div className="space-y-3.5">
+      <StaggerContainer className="space-y-3.5">
         {filtered.map((d) => (
-          <div
-            key={d.id}
-            data-testid={`disc-row-${d.id}`}
-            className={`rounded-2xl border p-5 shadow-xs transition-all ${
-              d.status === "open" || d.status === "pending"
-                ? "border-rose-200 bg-white"
-                : d.status === "pending_approval"
-                ? "border-amber-200 bg-white"
-                : "border-[#E2E8F0] bg-white"
-            }`}
-          >
-            <div className="flex items-center gap-3 flex-wrap">
-              <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${STATUS_BADGE[d.status] || "bg-slate-100"}`}>
-                {(d.status || "open").replace(/_/g, " ")}
-              </Badge>
-              <span className="font-semibold text-base text-[#010B1C]">{d.product_name || d.product?.name || "Material"}</span>
-              <span className="text-slate-500 text-sm">@ {d.location_name || d.location?.name || "Facility"}</span>
-              <span className={`font-mono font-bold text-base ml-auto ${d.balance < 0 || d.delta < 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                Variance: {d.delta > 0 ? `+${d.delta}` : d.delta} (Sys: {d.balance})
-              </span>
-            </div>
-            <div className="mt-2 text-xs text-slate-400 font-mono">Flagged on {new Date(d.created_at).toLocaleString()}</div>
-
-            {d.pending_correction && (
-              <div className="mt-3.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3.5">
-                <div className="text-xs uppercase tracking-wider text-amber-800 font-mono font-semibold mb-1">Proposed Adjustment</div>
-                <div className="text-sm text-slate-800 font-medium">
-                  Delta: <span className="font-mono font-bold text-amber-800">{d.pending_correction.adjust_qty > 0 ? "+" : ""}{d.pending_correction.adjust_qty}</span> — {d.pending_correction.note}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-1 font-mono">Proposed by {d.pending_correction.by}</div>
-              </div>
-            )}
-            {d.resolution_note && <div className="mt-2.5 text-xs text-slate-500 italic bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">Resolution: {d.resolution_note}</div>}
-
-            {d.audit?.length > 0 && (
-              <div className="mt-3 border-t border-[#E2E8F0] pt-2.5 space-y-1">
-                {d.audit.slice(-4).map((a, i) => (
-                  <div key={i} className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5">
-                    <History className="w-3.5 h-3.5 text-[#0091FF]" />
-                    <span className="text-slate-700 uppercase font-semibold">{a.action}</span> by {a.by} — {a.detail}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-[#E2E8F0]/70">
-              {d.status === "open" && canPropose && (
-                <Button onClick={() => setPropose(d)} data-testid={`propose-btn-${d.id}`} className="h-9 text-xs font-semibold">
-                  <Send className="w-4 h-4 mr-1.5" /> Propose Variance Fix
-                </Button>
-              )}
-              {d.status === "pending_approval" && canApprove && (
-                <>
-                  <Button onClick={() => act(d.id, "approve", "")} disabled={busy} data-testid={`approve-disc-${d.id}`} className="h-9 text-xs font-semibold">
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve Variance
-                  </Button>
-                  <Button onClick={() => act(d.id, "reject", "")} disabled={busy} data-testid={`reject-disc-${d.id}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
-                    <XCircle className="w-4 h-4 mr-1.5" /> Reject Proposal
-                  </Button>
-                </>
-              )}
-              {d.status === "pending_approval" && !canApprove && (
-                <span className="text-xs text-amber-700 font-medium bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                  Awaiting Finance verification &amp; approval…
+          <StaggerItem key={d.id}>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              data-testid={`disc-row-${d.id}`}
+              className={`rounded-2xl border p-5 shadow-xs transition-all card-lift ${
+                d.status === "open" || d.status === "pending"
+                  ? "border-rose-200 bg-white"
+                  : d.status === "pending_approval"
+                  ? "border-amber-200 bg-white"
+                  : "border-[#E2E8F0] bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-3 flex-wrap">
+                <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${STATUS_BADGE[d.status] || "bg-slate-100"}`}>
+                  {(d.status || "open").replace(/_/g, " ")}
+                </Badge>
+                <span className="font-semibold text-base text-[#010B1C]">{d.product_name || d.product?.name || "Material"}</span>
+                <span className="text-slate-500 text-sm">@ {d.location_name || d.location?.name || "Facility"}</span>
+                <span className={`font-mono font-bold text-base ml-auto ${d.balance < 0 || d.delta < 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                  Variance: {d.delta > 0 ? `+${d.delta}` : d.delta} (Sys: {d.balance})
                 </span>
+              </div>
+              <div className="mt-2 text-xs text-slate-400 font-mono">Flagged on {new Date(d.created_at).toLocaleString()}</div>
+
+              {d.pending_correction && (
+                <div className="mt-3.5 rounded-xl border border-amber-200 bg-amber-50/50 p-3.5">
+                  <div className="text-xs uppercase tracking-wider text-amber-800 font-mono font-semibold mb-1">Proposed Adjustment</div>
+                  <div className="text-sm text-slate-800 font-medium">
+                    Delta: <span className="font-mono font-bold text-amber-800">{d.pending_correction.adjust_qty > 0 ? "+" : ""}{d.pending_correction.adjust_qty}</span> — {d.pending_correction.note}
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-1 font-mono">Proposed by {d.pending_correction.by}</div>
+                </div>
               )}
-            </div>
-          </div>
+              {d.resolution_note && <div className="mt-2.5 text-xs text-slate-500 italic bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]">Resolution: {d.resolution_note}</div>}
+
+              {d.audit?.length > 0 && (
+                <div className="mt-3 border-t border-[#E2E8F0] pt-2.5 space-y-1">
+                  {d.audit.slice(-4).map((a, i) => (
+                    <div key={i} className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5">
+                      <History className="w-3.5 h-3.5 text-[#0091FF]" />
+                      <span className="text-slate-700 uppercase font-semibold">{a.action}</span> by {a.by} — {a.detail}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-4 flex flex-wrap gap-2 pt-3 border-t border-[#E2E8F0]/70">
+                {d.status === "open" && canPropose && (
+                  <Button onClick={() => setPropose(d)} data-testid={`propose-btn-${d.id}`} className="h-9 text-xs font-semibold">
+                    <Send className="w-4 h-4 mr-1.5" /> Propose Variance Fix
+                  </Button>
+                )}
+                {d.status === "pending_approval" && canApprove && (
+                  <>
+                    <Button onClick={() => act(d.id, "approve", "")} disabled={busy} data-testid={`approve-disc-${d.id}`} className="h-9 text-xs font-semibold">
+                      <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve Variance
+                    </Button>
+                    <Button onClick={() => act(d.id, "reject", "")} disabled={busy} data-testid={`reject-disc-${d.id}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
+                      <XCircle className="w-4 h-4 mr-1.5" /> Reject Proposal
+                    </Button>
+                  </>
+                )}
+                {d.status === "pending_approval" && !canApprove && (
+                  <span className="text-xs text-amber-700 font-medium bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                    Awaiting Finance verification &amp; approval…
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          </StaggerItem>
         ))}
         {items.length === 0 && (
-          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0]">
+          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0] font-mono">
             No discrepancies in this category.
           </div>
         )}
-      </div>
+      </StaggerContainer>
 
       {propose && <ProposeDialog disc={propose} onClose={() => setPropose(null)} onDone={load} />}
     </div>

@@ -17,6 +17,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../components/ui/select";
+import { StaggerContainer, StaggerItem } from "../components/PageTransition";
+import { motion } from "framer-motion";
 import { ShoppingCart, Plus, Clock, CheckCircle2, XCircle, Truck, PackageCheck } from "lucide-react";
 
 export default function Procurement() {
@@ -78,89 +80,96 @@ export default function Procurement() {
         </TabsList>
       </Tabs>
 
-      <div className="space-y-4">
+      <StaggerContainer className="space-y-4">
         {filtered.map((o) => (
-          <div key={o.id} data-testid={`proc-row-${o.number}`} className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="font-mono text-xs font-bold text-[#0091FF] bg-[#EBF5FA] px-2.5 py-1 rounded-md border border-[#98CAE4]/40">
-                {o.po_number || o.number}
-              </span>
-              <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${PO_STATUS_COLORS[o.status] || ""}`}>
-                {o.status.replace(/_/g, " ")}
-              </Badge>
-              {o.supplier_name && <span className="text-xs font-medium text-slate-600 font-body">Supplier: {o.supplier_name}</span>}
-              {o.total_cost != null && <span className="ml-auto font-mono text-sm font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">${o.total_cost}</span>}
-            </div>
+          <StaggerItem key={o.id}>
+            <motion.div
+              whileHover={{ y: -2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              data-testid={`proc-row-${o.number}`}
+              className="rounded-2xl border border-[#E2E8F0] bg-white p-5 card-lift shadow-xs"
+            >
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-mono text-xs font-bold text-[#0091FF] bg-[#EBF5FA] px-2.5 py-1 rounded-lg border border-[#98CAE4]/40">
+                  {o.po_number || o.number}
+                </span>
+                <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${PO_STATUS_COLORS[o.status] || ""}`}>
+                  {o.status.replace(/_/g, " ")}
+                </Badge>
+                {o.supplier_name && <span className="text-xs font-medium text-slate-600 font-body">Supplier: {o.supplier_name}</span>}
+                {o.total_cost != null && <span className="ml-auto font-mono text-sm font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">${o.total_cost}</span>}
+              </div>
 
-            <div className="mt-4 space-y-1.5 bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]/70">
-              {(o.items || []).map((it, idx) => (
-                <div key={it.product_id || idx} className="text-sm flex items-center justify-between">
-                  <span className="text-slate-800 font-medium">{it.product_name || "Raw Material"}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-slate-500">
-                      {it.qty ?? it.requested_qty ?? 0} {it.unit || "kg"}{it.unit_cost != null ? ` @ $${it.unit_cost}` : ""}
-                    </span>
-                    {(it.received_qty > 0) && (
-                      <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded">
-                        recv {it.received_qty}
+              <div className="mt-4 space-y-1.5 bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]/70">
+                {(o.items || []).map((it, idx) => (
+                  <div key={it.product_id || idx} className="text-sm flex items-center justify-between">
+                    <span className="text-slate-800 font-medium">{it.product_name || "Raw Material"}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-slate-500">
+                        {it.qty ?? it.requested_qty ?? 0} {it.unit || "kg"}{it.unit_cost != null ? ` @ $${it.unit_cost}` : ""}
                       </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {(!o.items || o.items.length === 0) && (
-                <div className="text-xs text-slate-400 italic">No line items specified</div>
-              )}
-            </div>
-
-            <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span>Requested by {o.requested_by || o.requester_name || o.created_by_name || "Operations Manager"}</span>
-              <span>{new Date(o.created_at).toLocaleDateString()}</span>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2.5 pt-3 border-t border-[#E2E8F0]">
-              {o.status === "requested" && canApprove && (
-                <>
-                  <Button onClick={() => setApprove(o)} data-testid={`approve-pr-${o.number}`} className="h-9 text-xs font-semibold">
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve &amp; Set Cost
-                  </Button>
-                  <Button onClick={() => setUpdate({ order: o, reject: true })} data-testid={`reject-pr-${o.number}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
-                    <XCircle className="w-4 h-4 mr-1.5" /> Reject
-                  </Button>
-                </>
-              )}
-              {!["requested", "delivered", "rejected"].includes(o.status) && canOps && (
-                <>
-                  <Button onClick={() => setUpdate({ order: o })} data-testid={`update-order-${o.number}`} variant="outline" className="h-9 text-xs">
-                    <Clock className="w-4 h-4 mr-1.5 text-[#0091FF]" /> Update Stage / Telemetry
-                  </Button>
-                  <Button onClick={() => setDeliver(o)} data-testid={`deliver-order-${o.number}`} className="h-9 text-xs font-semibold">
-                    <PackageCheck className="w-4 h-4 mr-1.5" /> Receive &amp; Stock
-                  </Button>
-                </>
-              )}
-            </div>
-
-            {o.timeline?.length > 1 && (
-              <div className="mt-3 bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]/60 space-y-1.5">
-                {o.timeline.slice(-4).map((t, i) => (
-                  <div key={i} className="text-xs text-slate-500 font-mono flex items-center gap-2">
-                    <Truck className="w-3.5 h-3.5 text-[#0091FF] shrink-0" />
-                    <span className="text-slate-700 font-semibold">{t.label}</span>
-                    {t.note && <span className="text-slate-500">— {t.note}</span>}
-                    <span className="ml-auto text-slate-400 text-[11px]">{new Date(t.at).toLocaleDateString()}</span>
+                      {(it.received_qty > 0) && (
+                        <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded">
+                          recv {it.received_qty}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
+                {(!o.items || o.items.length === 0) && (
+                  <div className="text-xs text-slate-400 italic font-mono">No line items specified</div>
+                )}
               </div>
-            )}
-          </div>
+
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-400 font-mono">
+                <span>Requested by {o.requested_by || o.requester_name || o.created_by_name || "Operations Manager"}</span>
+                <span>{new Date(o.created_at).toLocaleDateString()}</span>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2.5 pt-3 border-t border-[#E2E8F0]">
+                {o.status === "requested" && canApprove && (
+                  <>
+                    <Button onClick={() => setApprove(o)} data-testid={`approve-pr-${o.number}`} className="h-9 text-xs font-semibold">
+                      <CheckCircle2 className="w-4 h-4 mr-1.5" /> Approve &amp; Set Cost
+                    </Button>
+                    <Button onClick={() => setUpdate({ order: o, reject: true })} data-testid={`reject-pr-${o.number}`} variant="outline" className="h-9 text-xs border-rose-200 text-rose-600 hover:bg-rose-50">
+                      <XCircle className="w-4 h-4 mr-1.5" /> Reject
+                    </Button>
+                  </>
+                )}
+                {!["requested", "delivered", "rejected"].includes(o.status) && canOps && (
+                  <>
+                    <Button onClick={() => setUpdate({ order: o })} data-testid={`update-order-${o.number}`} variant="outline" className="h-9 text-xs">
+                      <Clock className="w-4 h-4 mr-1.5 text-[#0091FF]" /> Update Stage / Telemetry
+                    </Button>
+                    <Button onClick={() => setDeliver(o)} data-testid={`deliver-order-${o.number}`} className="h-9 text-xs font-semibold">
+                      <PackageCheck className="w-4 h-4 mr-1.5" /> Receive &amp; Stock
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              {o.timeline?.length > 1 && (
+                <div className="mt-3 bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]/60 space-y-1.5">
+                  {o.timeline.slice(-4).map((t, i) => (
+                    <div key={i} className="text-xs text-slate-500 font-mono flex items-center gap-2">
+                      <Truck className="w-3.5 h-3.5 text-[#0091FF] shrink-0" />
+                      <span className="text-slate-700 font-semibold">{t.label}</span>
+                      {t.note && <span className="text-slate-500">— {t.note}</span>}
+                      <span className="ml-auto text-slate-400 text-[11px]">{new Date(t.at).toLocaleDateString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </StaggerItem>
         ))}
         {filtered.length === 0 && (
-          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0]">
+          <div className="text-slate-400 text-sm py-12 text-center bg-white rounded-2xl border border-[#E2E8F0] font-mono">
             No procurement orders in this status view.
           </div>
         )}
-      </div>
+      </StaggerContainer>
 
       <PurchaseRequestDialog open={prOpen} onClose={() => setPrOpen(false)} onDone={load} />
       {approve && <ApproveDialog order={approve} onClose={() => setApprove(null)} onDone={load} />}

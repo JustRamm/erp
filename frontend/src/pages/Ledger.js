@@ -5,6 +5,7 @@ import { TXN_COLORS } from "../lib/constants";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import { TableSkeleton } from "../components/PageSkeleton";
+import { StaggerContainer, StaggerItem } from "../components/PageTransition";
 import { Search } from "lucide-react";
 
 export default function Ledger() {
@@ -63,37 +64,39 @@ export default function Ledger() {
           <div className="col-span-2">Logged By</div>
           <div className="col-span-2 text-right">Timestamp</div>
         </div>
-        <div className="divide-y divide-[#F1F5F9]">
+        <StaggerContainer className="divide-y divide-[#F1F5F9]">
           {filtered.map((t) => (
-            <div key={t.id} data-testid="ledger-entry" className="grid grid-cols-2 md:grid-cols-12 gap-3 px-5 py-3.5 items-center text-sm hover:bg-[#F8FAFC]/80 transition-colors">
-              <div className="md:col-span-2">
-                <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${
-                  t.delta >= 0 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"
-                }`}>
-                  {t.txn_label}
-                </Badge>
-              </div>
-              <div className="md:col-span-3 min-w-0">
-                <div className="font-semibold text-[#010B1C] truncate">{t.product_name}</div>
-                <div className="font-mono text-[11px] text-[#0091FF]">{t.product_sku}</div>
-              </div>
-              <div className="md:col-span-2 text-slate-600 text-xs truncate">{t.location_name}</div>
-              <div className={`md:col-span-1 text-right font-mono font-bold text-sm ${t.delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                {t.delta >= 0 ? "+" : ""}{t.delta}
-              </div>
-              <div className="md:col-span-2 text-slate-600 text-xs truncate">{t.actor_name}</div>
-              <div className="md:col-span-2 text-right text-slate-400 font-mono text-xs">{new Date(t.created_at).toLocaleString()}</div>
-              {t.note && (
-                <div className="col-span-2 md:col-span-12 text-xs text-slate-500 bg-[#F8FAFC] px-3 py-1.5 rounded-lg border border-[#E2E8F0]/60 mt-1">
-                  Note: {t.note}{t.total_cost != null ? ` · Total Value: $${t.total_cost}` : ""}
+            <StaggerItem key={t.id}>
+              <div data-testid="ledger-entry" className="grid grid-cols-2 md:grid-cols-12 gap-3 px-5 py-3.5 items-center text-sm hover:bg-[#F8FAFC] transition-colors duration-150">
+                <div className="md:col-span-2">
+                  <Badge className={`text-[10px] uppercase font-mono px-2.5 py-0.5 border ${
+                    t.delta >= 0 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"
+                  }`}>
+                    {t.txn_label}
+                  </Badge>
                 </div>
-              )}
-            </div>
+                <div className="md:col-span-3 min-w-0">
+                  <div className="font-semibold text-[#010B1C] truncate">{t.product_name}</div>
+                  <div className="font-mono text-[11px] text-[#0091FF]">{t.product_sku}</div>
+                </div>
+                <div className="md:col-span-2 text-slate-600 text-xs truncate">{t.location_name}</div>
+                <div className={`md:col-span-1 text-right font-mono font-bold text-sm ${t.delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                  {t.delta >= 0 ? "+" : ""}{t.delta}
+                </div>
+                <div className="md:col-span-2 text-slate-600 text-xs truncate">{t.actor_name}</div>
+                <div className="md:col-span-2 text-right text-slate-400 font-mono text-xs">{new Date(t.created_at).toLocaleString()}</div>
+                {t.note && (
+                  <div className="col-span-2 md:col-span-12 text-xs text-slate-500 bg-[#F8FAFC] px-3 py-1.5 rounded-lg border border-[#E2E8F0]/60 mt-1">
+                    Note: {t.note}{t.total_cost != null ? ` · Total Value: $${t.total_cost}` : ""}
+                  </div>
+                )}
+              </div>
+            </StaggerItem>
           ))}
           {filtered.length === 0 && (
-            <div className="text-slate-400 text-sm py-12 text-center">No ledger entries match criteria.</div>
+            <div className="text-slate-400 text-sm py-12 text-center font-mono">No matching ledger transactions found.</div>
           )}
-        </div>
+        </StaggerContainer>
       </div>
     </div>
   );

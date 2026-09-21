@@ -5,19 +5,19 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0091FF]/30 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.96] active:brightness-95 select-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 ease-spring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0091FF]/30 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] active:brightness-95 select-none cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-[#3195C9] to-[#0091FF] text-white shadow-sm hover:shadow-[0_4px_14px_rgba(0,145,255,0.35)] hover:brightness-105",
+          "bg-gradient-to-r from-[#3195C9] to-[#0091FF] text-white shadow-sm hover:shadow-[0_6px_18px_rgba(0,145,255,0.38)] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0",
         destructive:
-          "bg-rose-600 text-white shadow-sm hover:bg-rose-700 hover:shadow-[0_4px_14px_rgba(225,29,72,0.35)]",
+          "bg-rose-600 text-white shadow-sm hover:bg-rose-700 hover:shadow-[0_6px_18px_rgba(225,29,72,0.35)] hover:-translate-y-0.5 active:translate-y-0",
         outline:
-          "border border-[#E2E8F0] bg-white text-[#010B1C] shadow-xs hover:bg-[#F8FAFC] hover:border-[#98CAE4] hover:shadow-sm",
+          "border border-[#E2E8F0] bg-white text-[#010B1C] shadow-xs hover:bg-[#F8FAFC] hover:border-[#98CAE4] hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0",
         secondary:
-          "bg-[#EBF5FA] text-[#0091FF] border border-[#98CAE4]/40 hover:bg-[#E2EEF7] hover:border-[#98CAE4]",
-        ghost: "text-slate-700 hover:bg-[#EBF5FA] hover:text-[#0091FF]",
+          "bg-[#EBF5FA] text-[#0091FF] border border-[#98CAE4]/40 hover:bg-[#E2EEF7] hover:border-[#98CAE4] hover:-translate-y-0.5 active:translate-y-0",
+        ghost: "text-slate-700 hover:bg-[#EBF5FA] hover:text-[#0091FF] active:scale-95",
         link: "text-[#0091FF] underline-offset-4 hover:underline active:scale-100",
       },
       size: {

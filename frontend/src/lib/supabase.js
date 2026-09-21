@@ -3,20 +3,17 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "";
 
-export const isSupabaseConfigured = () => {
-  return Boolean(
-    supabaseUrl &&
-    supabaseAnonKey &&
-    !supabaseUrl.includes("your-project") &&
-    !supabaseAnonKey.includes("your-anon")
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error(
+    "[Supabase] Missing REACT_APP_SUPABASE_URL or REACT_APP_SUPABASE_ANON_KEY in .env — " +
+    "restart the dev server after updating .env"
   );
-};
+}
 
-// Use valid placeholder URL if not configured to prevent startup crashes
-const safeUrl = isSupabaseConfigured() ? supabaseUrl : "https://placeholder-ims.supabase.co";
-const safeKey = isSupabaseConfigured() ? supabaseAnonKey : "placeholder-key";
+export const isSupabaseConfigured = () =>
+  Boolean(supabaseUrl && supabaseAnonKey);
 
-export const supabase = createClient(safeUrl, safeKey, {
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

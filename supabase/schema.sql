@@ -530,34 +530,34 @@ VALUES
     ('11111111-1111-1111-1111-111111111111', 'Central Processing Facility', 'CPF-01', 'factory'),
     ('22222222-2222-2222-2222-222222222222', 'Kochi Port Warehouse', 'WH-KCH', 'warehouse'),
     ('33333333-3333-3333-3333-333333333333', 'Bangalore Logistics Hub', 'WH-BLR', 'warehouse'),
-    ('44444444-4444-4444-4444-444444444444', 'RecycleCo Partner Facility', 'PRT-RC1', 'partner'),
+    ('44444444-4444-4444-4444-444444444444', 'GreenCycle Partner Facility', 'PRT-RC1', 'partner'),
     ('55555555-5555-5555-5555-555555555555', 'Marine Drive Deployment Site', 'SITE-MD', 'client'),
     ('00000000-0000-0000-0000-000000000000', 'External / Supplier / Market', 'EXT-SUP', 'supplier')
-ON CONFLICT (name) DO NOTHING;
+ON CONFLICT (id) DO NOTHING;
 
 -- Categories
 INSERT INTO public.categories (id, name, tracking_mode, unit, "group", sku_prefix, low_stock_threshold)
 VALUES
-    ('c1111111-1111-1111-1111-111111111111', 'Raw Recycled Flakes', 'bulk', 'kg', 'raw_material', 'RAW', 500.00),
-    ('c2222222-2222-2222-2222-222222222222', 'Plastic Granules / Pellets', 'bulk', 'kg', 'product', 'PEL', 300.00),
-    ('c3333333-3333-3333-3333-333333333333', 'Composite Lumber Boards', 'bulk', 'piece', 'product', 'LMB', 50.00),
-    ('c4444444-4444-4444-4444-444444444444', 'Public Space Park Benches', 'unique', 'unit', 'end_product', 'BNC', 5.00),
-    ('c5555555-5555-5555-5555-555555555555', 'Recycled Waste Bins', 'unique', 'unit', 'end_product', 'BIN', 10.00)
-ON CONFLICT (name) DO NOTHING;
+    ('ca111111-1111-1111-1111-111111111111', 'Raw Recycled Flakes', 'bulk', 'kg', 'raw_material', 'RAW', 500.00),
+    ('ca222222-2222-2222-2222-222222222222', 'Plastic Granules / Pellets', 'bulk', 'kg', 'product', 'PEL', 300.00),
+    ('ca333333-3333-3333-3333-333333333333', 'Composite Lumber Boards', 'bulk', 'piece', 'product', 'LMB', 50.00),
+    ('ca444444-4444-4444-4444-444444444444', 'Public Space Park Benches', 'unique', 'unit', 'end_product', 'BNC', 5.00),
+    ('ca555555-5555-5555-5555-555555555555', 'Recycled Waste Bins', 'unique', 'unit', 'end_product', 'BIN', 10.00)
+ON CONFLICT (id) DO NOTHING;
 
 -- Products
 INSERT INTO public.products (id, category_id, sku, name, unit, tracking_mode, reorder_level, unit_cost)
 VALUES
-    ('p1111111-1111-1111-1111-111111111111', 'c1111111-1111-1111-1111-111111111111', 'RAW-HDPE-01', 'Unsorted HDPE Baled Flakes', 'kg', 'bulk', 1000.00, 35.00),
-    ('p2222222-2222-2222-2222-222222222222', 'c2222222-2222-2222-2222-222222222222', 'PEL-PP-01', 'Extruded PP Pellet (Black)', 'kg', 'bulk', 500.00, 75.00),
-    ('p3333333-3333-3333-3333-333333333333', 'c3333333-3333-3333-3333-333333333333', 'LMB-COMP-2M', '2-Meter Composite Planks', 'piece', 'bulk', 100.00, 450.00),
-    ('p4444444-4444-4444-4444-444444444444', 'c4444444-4444-4444-4444-444444444444', 'BNC-ECO-01', 'EcoUrban Park Bench (3-Seater)', 'unit', 'unique', 10.00, 4800.00),
-    ('p5555555-5555-5555-5555-555555555555', 'c5555555-5555-5555-5555-555555555555', 'BIN-DUAL-01', 'Smart Dual Segregation Bin', 'unit', 'unique', 15.00, 2200.00)
-ON CONFLICT (sku) DO NOTHING;
+    ('de111111-1111-1111-1111-111111111111', 'ca111111-1111-1111-1111-111111111111', 'RAW-HDPE-01', 'Unsorted HDPE Baled Flakes', 'kg', 'bulk', 1000.00, 35.00),
+    ('de222222-2222-2222-2222-222222222222', 'ca222222-2222-2222-2222-222222222222', 'PEL-PP-01', 'Extruded PP Pellet (Black)', 'kg', 'bulk', 500.00, 75.00),
+    ('de333333-3333-3333-3333-333333333333', 'ca333333-3333-3333-3333-333333333333', 'LMB-COMP-2M', '2-Meter Composite Planks', 'piece', 'bulk', 100.00, 450.00),
+    ('de444444-4444-4444-4444-444444444444', 'ca444444-4444-4444-4444-444444444444', 'BNC-ECO-01', 'EcoUrban Park Bench (3-Seater)', 'unit', 'unique', 10.00, 4800.00),
+    ('de555555-5555-5555-5555-555555555555', 'ca555555-5555-5555-5555-555555555555', 'BIN-DUAL-01', 'Smart Dual Segregation Bin', 'unit', 'unique', 15.00, 2200.00)
+ON CONFLICT (id) DO NOTHING;
 
 -- Partners
 INSERT INTO public.partners (id, name, contact_person, phone, email, verified, rating)
 VALUES
     ('44444444-4444-4444-4444-444444444444', 'GreenCycle Fabricators Ltd', 'Rajesh Menon', '+91 98765 43210', 'rajesh@greencycle.in', true, 4.90),
-    ('a1111111-1111-1111-1111-111111111111', 'CleanKerala Collection Network', 'Ananya Nair', '+91 94470 12345', 'ananya@cleankerala.org', true, 4.80)
+    ('aa111111-1111-1111-1111-111111111111', 'CleanKerala Collection Network', 'Ananya Nair', '+91 94470 12345', 'ananya@cleankerala.org', true, 4.80)
 ON CONFLICT (id) DO NOTHING;

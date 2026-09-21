@@ -93,16 +93,22 @@ export const api = {
 
     // Dashboard Overview
     if (cleanUrl === "dashboard/summary" || cleanUrl === "dashboard") {
-      const [balances, ledger, prs, discrepancies] = await Promise.all([
+      const results = await Promise.allSettled([
         SupabaseService.fetchInventoryBalances(),
         SupabaseService.fetchLedgerEntries(10),
         SupabaseService.fetchProcurementRequests(),
         SupabaseService.fetchDiscrepancies()
       ]);
 
+      const balances = (results[0].status === 'fulfilled' ? results[0].value : null) || [];
+      const ledger   = (results[1].status === 'fulfilled' ? results[1].value : null) || [];
+      const prs      = (results[2].status === 'fulfilled' ? results[2].value : null) || [];
+      const discrepancies = (results[3].status === 'fulfilled' ? results[3].value : null) || [];
+
       const catMap = {};
       for (const b of balances) {
-        const catName = b.product?.category_name || "Raw Materials";
+        const cat = b.product?.category || {};
+        const catName = cat.name || b.product?.category_name || "Uncategorized";
         if (!catMap[catName]) {
           catMap[catName] = {
             category: catName,
@@ -115,15 +121,7 @@ export const api = {
         catMap[catName].total += (b.total_qty || 0);
         catMap[catName].products += 1;
       }
-      let cards = Object.values(catMap);
-      if (cards.length === 0) {
-        cards = [
-          { category: "Raw Recycled Flakes", total: 5000, unit: "kg", products: 1, tracking_mode: "bulk" },
-          { category: "Plastic Granules / Pellets", total: 2400, unit: "kg", products: 1, tracking_mode: "bulk" },
-          { category: "Composite Lumber Boards", total: 100, unit: "piece", products: 1, tracking_mode: "bulk" },
-          { category: "Public Space Park Benches", total: 4, unit: "unit", products: 1, tracking_mode: "unique" },
-        ];
-      }
+      const cards = Object.values(catMap);
 
       const totalWeight = balances.reduce((sum, b) => sum + (b.total_qty || 0), 0);
       const totalValue = balances.reduce((sum, b) => sum + ((b.total_qty || 0) * (b.product?.unit_cost || 0)), 0);
@@ -135,10 +133,10 @@ export const api = {
         unit: b.product?.unit || "kg"
       }));
 
-      const openDiscs = (discrepancies || []).filter(d => d.status === "open" || d.status === "pending").length;
-      const pendingDiscApprovals = (discrepancies || []).filter(d => d.status === "pending_approval" || d.pending_correction).length;
-      const pendingPRs = (prs || []).filter(p => p.status === "requested").length;
-      const liveOrders = (prs || []).filter(p => p.status !== "delivered" && p.status !== "rejected" && p.status !== "requested").length;
+      const openDiscs = discrepancies.filter(d => d.status === "open" || d.status === "pending").length;
+      const pendingDiscApprovals = discrepancies.filter(d => d.status === "pending_approval" || d.pending_correction).length;
+      const pendingPRs = prs.filter(p => p.status === "requested").length;
+      const liveOrders = prs.filter(p => p.status !== "delivered" && p.status !== "rejected" && p.status !== "requested").length;
 
       return {
         data: {
