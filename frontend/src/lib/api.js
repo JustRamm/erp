@@ -366,14 +366,42 @@ export const api = {
       return { data };
     }
 
+    // User Provisioning
+    if (cleanUrl === "users") {
+      const data = await SupabaseService.createUser(payload);
+      return { data };
+    }
+
     return { data: { ok: true } };
   },
 
   async put(url, payload = {}) {
+    const cleanUrl = url.split("?")[0].replace(/^\/api/, "").replace(/^\//, "");
+    if (cleanUrl === "settings") {
+      const data = await SupabaseService.updateSettings(payload);
+      return { data };
+    }
     return this.post(url, payload);
   },
 
+  async patch(url, payload = {}) {
+    const cleanUrl = url.split("?")[0].replace(/^\/api/, "").replace(/^\//, "");
+    if (cleanUrl.startsWith("users/")) {
+      const id = cleanUrl.replace(/^users\//, "");
+      const data = await SupabaseService.updateUser(id, payload);
+      return { data };
+    }
+    return { data: { ok: true, ...payload } };
+  },
+
   async delete(url) {
+    const cleanUrl = url.split("?")[0].replace(/^\/api/, "").replace(/^\//, "");
+    if (cleanUrl.startsWith("users/")) {
+      const id = cleanUrl.replace(/^users\//, "");
+      const data = await SupabaseService.deleteUser(id);
+      return { data };
+    }
     return { data: { ok: true } };
   }
 };
+
