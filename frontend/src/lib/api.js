@@ -91,6 +91,48 @@ export const api = {
       return { data };
     }
 
+    // Master data for ActionDialog
+    if (cleanUrl === "master/locations") {
+      const data = await SupabaseService.fetchLocations();
+      return { data };
+    }
+    if (cleanUrl === "master/customers") {
+      const data = await SupabaseService.fetchPartners();
+      return { data };
+    }
+
+    // Client / Boardroom dashboard
+    if (cleanUrl === "client/dashboard") {
+      const [balances, ledger] = await Promise.allSettled([
+        SupabaseService.fetchInventoryBalances(),
+        SupabaseService.fetchLedgerEntries(500),
+      ]);
+      const bals = (balances.status === 'fulfilled' ? balances.value : null) || [];
+      const entries = (ledger.status === 'fulfilled' ? ledger.value : null) || [];
+
+      const plasticKg = bals.reduce((s, b) => s + (b.total_qty || 0), 0);
+      const co2Saved = Math.round(plasticKg * 2.1); // ~2.1kg CO2 saved per kg plastic recycled
+      const production = entries
+        .filter(e => e.transaction_type === 'MANUFACTURE')
+        .reduce((acc, e) => {
+          const name = e.product?.name || 'Product';
+          acc[name] = (acc[name] || 0) + (e.quantity || 0);
+          return acc;
+        }, {});
+      const deployed = entries.filter(e => e.transaction_type === 'DEPLOYMENT').reduce((s, e) => s + (e.quantity || 0), 0);
+      const volumes = bals.map(b => ({ name: b.product?.category?.name || b.product?.name || 'Item', total: b.total_qty || 0 }));
+
+      return {
+        data: {
+          plastic_diverted_kg: plasticKg,
+          co2_saved_kg: co2Saved,
+          deployed_count: deployed,
+          production: Object.entries(production).map(([product, qty]) => ({ product, qty })),
+          volumes,
+        }
+      };
+    }
+
     // Dashboard Overview
     if (cleanUrl === "dashboard/summary" || cleanUrl === "dashboard") {
       const results = await Promise.allSettled([
@@ -210,10 +252,75 @@ export const api = {
       return { data };
     }
 
-    // Ledger Movement
-    if (cleanUrl === "ledger" || cleanUrl === "actions/execute") {
-      const data = await SupabaseService.postLedgerEntry(payload);
+    // Ledger Movement — generic
+    if (cleanUrl === "ledger" || cleanUrl === "actions/execute" || cleanUrl === "transactions") {
+      // Map client action keys to valid DB enum values
+      const TXN_MAP = {
+        consume: "STAGE_ADVANCE",
+        consumed: "STAGE_ADVANCE",
+        damage: "DISCREPANCY_ADJUST",
+        damaged: "DISCREPANCY_ADJUST",
+        deploy: "DEPLOYMENT",
+        deployed: "DEPLOYMENT",
+        transfer: "TRANSFER",
+        manufacture: "MANUFACTURE",
+        receive: "RECEIVE_RAW",
+        return: "RETURN_RECYCLE",
+      };
+      const txnType = TXN_MAP[payload.txn_type] || TXN_MAP[payload.transaction_type] || payload.transaction_type || "STAGE_ADVANCE";
+      const entry = {
+        transaction_type: txnType,
+        product_id: payload.product_id,
+        from_location_id: payload.location_id || payload.from_location_id || null,
+        to_location_id: payload.to_location_id || null,
+        quantity: Math.abs(Number(payload.qty || payload.quantity || 0)),
+        unit_cost: payload.unit_cost ? Number(payload.unit_cost) : null,
+        notes: payload.note || payload.notes || "",
+        operator_name: payload.operator_name || null,
+      };
+      const data = await SupabaseService.postLedgerEntry(entry);
       return { data };
+    }
+
+    // Manufacture: two ledger entries — stage advance consumed + manufacture produced
+    if (cleanUrl === "production/run") {
+      await SupabaseService.postLedgerEntry({
+        transaction_type: "STAGE_ADVANCE",
+        product_id: payload.consumed_product_id,
+        from_location_id: payload.consumed_location_id,
+        to_location_id: null,
+        quantity: Math.abs(Number(payload.consumed_qty || 0)),
+        unit_cost: null,
+        notes: payload.note || "Production consumption",
+      });
+      await SupabaseService.postLedgerEntry({
+        transaction_type: "MANUFACTURE",
+        product_id: payload.produced_product_id,
+        from_location_id: payload.consumed_location_id,
+        to_location_id: payload.produced_location_id,
+        quantity: Math.abs(Number(payload.produced_qty || 0)),
+        unit_cost: payload.unit_cost ? Number(payload.unit_cost) : null,
+        notes: payload.note || "Production run",
+      });
+      return { data: { ok: true } };
+    }
+
+    // Transfer stock
+    if (cleanUrl === "transfer") {
+      await SupabaseService.postLedgerEntry({
+        transaction_type: "TRANSFER",
+        product_id: payload.product_id,
+        from_location_id: payload.from_location_id,
+        to_location_id: payload.to_location_id,
+        quantity: Math.abs(Number(payload.qty || 0)),
+        notes: payload.note || "Stock transfer",
+      });
+      return { data: { ok: true } };
+    }
+
+    // File upload — return a dummy path (no file storage needed for demo)
+    if (cleanUrl === "upload") {
+      return { data: { storage_path: `/uploads/photo_${Date.now()}.jpg`, url: "" } };
     }
 
     // Procurement Operations

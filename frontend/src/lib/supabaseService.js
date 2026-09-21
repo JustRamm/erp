@@ -144,22 +144,32 @@ export async function fetchLedgerEntries(limit = 100) {
     return [];
   }
 
+  // Valid transaction_type enum: RECEIVE_RAW | STAGE_ADVANCE | MANUFACTURE | TRANSFER | DISCREPANCY_ADJUST | DEPLOYMENT | RETURN_RECYCLE
+  const OUTFLOW_TYPES = new Set(["STAGE_ADVANCE", "DEPLOYMENT"]);
+
   return (data || []).map(e => {
     const locName = e.to_location?.name || e.from_location?.name || "Facility";
-    const delta = e.delta !== undefined ? e.delta : (
-      e.transaction_type === "CONSUME" || e.transaction_type === "DAMAGE" || e.transaction_type === "DEPLOY" || (e.from_location_id && !e.to_location_id)
-        ? -Math.abs(e.quantity || 0)
-        : Math.abs(e.quantity || 0)
-    );
+    const isOutflow = OUTFLOW_TYPES.has(e.transaction_type) || (e.from_location_id && !e.to_location_id);
+    const delta = isOutflow ? -Math.abs(e.quantity || 0) : Math.abs(e.quantity || 0);
+
+    const TXN_LABELS = {
+      RECEIVE_RAW: "Received",
+      MANUFACTURE: "Manufactured",
+      TRANSFER: "Transferred",
+      STAGE_ADVANCE: "Consumed",
+      DISCREPANCY_ADJUST: "Adjusted",
+      DEPLOYMENT: "Deployed",
+      RETURN_RECYCLE: "Returned",
+    };
 
     return {
       ...e,
-      txn_label: e.txn_label || (e.transaction_type ? e.transaction_type.toLowerCase().replace(/_/g, " ") : "Movement"),
+      txn_label: TXN_LABELS[e.transaction_type] || e.transaction_type || "Movement",
       product_name: e.product?.name || "Product",
       product_sku: e.product?.sku || "SKU",
-      location_name: e.location_name || locName,
-      delta: delta,
-      actor_name: e.operator_name || "Operations Manager",
+      location_name: locName,
+      delta,
+      actor_name: e.operator_name || "Operations",
       note: e.notes || "",
       created_at: e.created_at || new Date().toISOString(),
     };
@@ -190,18 +200,24 @@ export async function fetchInventoryBalances() {
     }
   }
 
+  const OUTFLOW_TYPES = new Set(["STAGE_ADVANCE", "DEPLOYMENT"]);
+
   for (const entry of ledger) {
     const pid = entry.product_id;
     if (!balances[pid]) continue;
     const qty = Number(entry.quantity) || 0;
-    
-    // Inflow to destination location
+    const isOutflowOnly = OUTFLOW_TYPES.has(entry.transaction_type) && !entry.to_location_id;
+
+    // Inflow to destination location (all types with a to_location)
     if (entry.to_location_id && balances[pid].by_location[entry.to_location_id] !== undefined) {
       balances[pid].by_location[entry.to_location_id] += qty;
     }
-    // Outflow from origin location
+    // Outflow from origin location (all types with a from_location)
     if (entry.from_location_id && balances[pid].by_location[entry.from_location_id] !== undefined) {
-      balances[pid].by_location[entry.from_location_id] -= qty;
+      // Only subtract if it's actually leaving (has no destination, or it's an outflow type)
+      if (!entry.to_location_id || entry.transaction_type === "TRANSFER" || entry.transaction_type === "DEPLOYMENT") {
+        balances[pid].by_location[entry.from_location_id] -= qty;
+      }
     }
   }
 
@@ -324,7 +340,7 @@ export async function deliverProcurementOrder(id, locationId, receivedItems, not
     note: note || "Order received and stock updated"
   }]);
 
-  // Insert double-entry ledger entries for delivered items
+  // Insert RECEIVE_RAW ledger entries for each delivered item
   for (const item of (receivedItems || [])) {
     await postLedgerEntry({
       transaction_type: "RECEIVE_RAW",
@@ -332,10 +348,15 @@ export async function deliverProcurementOrder(id, locationId, receivedItems, not
       from_location_id: "00000000-0000-0000-0000-000000000000",
       to_location_id: locationId,
       quantity: Number(item.received_qty),
-      unit: item.unit || "kg",
+      unit_cost: Number(item.unit_cost) || 0,
       notes: `PO Delivery: ${pr?.po_number || pr?.pr_number || id}`,
       operator_name: "Operations"
     });
+    // Update received_qty on the item
+    await supabase.from("procurement_items")
+      .update({ received_qty: Number(item.received_qty) })
+      .eq("request_id", id)
+      .eq("product_id", item.product_id);
   }
   return { ok: true };
 }
@@ -460,7 +481,9 @@ export async function fetchDiscrepancies() {
 }
 
 export async function reportDiscrepancy(disc) {
-  const { data, error } = await supabase.from("discrepancies").insert([disc]).select().single();
+  // variance is a generated column (physical_quantity - system_quantity) — never insert it
+  const { variance, ...safeDisc } = disc;
+  const { data, error } = await supabase.from("discrepancies").insert([safeDisc]).select().single();
   if (error) throw error;
   return data;
 }
