@@ -70,9 +70,9 @@ export default function Layout() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-2 shadow-xs cursor-pointer"
+            className="w-10 h-10 rounded-xl bg-slate-50 border border-[#E2E8F0] flex items-center justify-center p-1.5 shadow-xs cursor-pointer"
           >
-            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
+            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain" />
           </motion.div>
           <div>
             <span className="font-head text-lg font-bold tracking-tight text-[#010B1C] block leading-tight">CARBON &amp; WHALE</span>
@@ -96,7 +96,7 @@ export default function Layout() {
       {/* Mobile drawer with spring animation */}
       <AnimatePresence>
         {open && (
-          <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="md:hidden fixed inset-0 z-50 flex justify-end">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -106,35 +106,53 @@ export default function Layout() {
               onClick={() => setOpen(false)}
             />
             <motion.aside
-              initial={{ x: -280 }}
+              initial={{ x: 280 }}
               animate={{ x: 0 }}
-              exit={{ x: -280 }}
+              exit={{ x: 280 }}
               transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              className="relative w-64 bg-white border-r border-[#E2E8F0] p-5 shadow-2xl flex flex-col h-full"
+              className="relative w-72 bg-white border-l border-[#E2E8F0] p-5 shadow-2xl flex flex-col h-full z-10"
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-1.5 shadow-xs">
-                    <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
+                  <div className="w-9 h-9 rounded-xl bg-slate-50 border border-[#E2E8F0] flex items-center justify-center p-1.5 shadow-xs">
+                    <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain" />
                   </div>
                   <span className="font-head text-base font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
                 </div>
                 <button
                   onClick={() => setOpen(false)}
                   data-testid="close-menu-btn"
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* User profile card inside mobile menu */}
+              <div className="mb-4 p-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[#EBF5FA] border border-[#98CAE4]/50 flex items-center justify-center text-xs font-bold text-[#0091FF] shrink-0">
+                    {user?.name?.[0] || "U"}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-semibold truncate text-[#010B1C]">{user?.name || "User"}</div>
+                    <div className="text-[10px] font-mono text-slate-400 truncate">{user?.email}</div>
+                  </div>
+                </div>
+                <div className="mt-2 pt-2 border-t border-[#E2E8F0]/60 flex items-center justify-between">
+                  <Badge className={`text-[9px] uppercase border px-1.5 py-0 ${ROLE_BADGE[user?.role] || ""}`}>{user?.role}</Badge>
+                </div>
+              </div>
+
               <div className="flex-1 overflow-y-auto">
                 <SideLinks onClick={() => setOpen(false)} />
               </div>
+
               <div className="pt-4 border-t border-[#E2E8F0] mt-auto">
                 <button
                   onClick={() => { setOpen(false); doLogout(); }}
                   data-testid="mobile-logout-btn"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-rose-600 bg-rose-50/80 hover:bg-rose-100 rounded-xl border border-rose-200 active:scale-[0.98] transition-all duration-150"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-rose-600 bg-rose-50/80 hover:bg-rose-100 rounded-xl border border-rose-200 active:scale-[0.98] transition-all duration-150 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" /> Sign Out
                 </button>
@@ -145,26 +163,21 @@ export default function Layout() {
       </AnimatePresence>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-40 flex items-center gap-3 px-4 sm:px-8 h-16 border-b border-[#E2E8F0]/80 bg-white/85 backdrop-blur-md transition-all">
-          <button
-            className="md:hidden p-2 rounded-xl border border-[#E2E8F0] text-slate-600 active:scale-95 hover:bg-[#F8FAFC] transition-all"
-            onClick={() => setOpen(true)}
-            data-testid="open-menu-btn"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-3 px-4 sm:px-8 h-16 border-b border-[#E2E8F0]/80 bg-white/85 backdrop-blur-md transition-all">
+          {/* Mobile brand on the left */}
           <div className="md:hidden flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-1.5">
-              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
+            <div className="w-8 h-8 rounded-lg bg-slate-50 border border-[#E2E8F0] flex items-center justify-center p-1">
+              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-head text-sm font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
           </div>
+
           <div className="ml-auto flex items-center gap-2.5">
             <DropdownMenu onOpenChange={(o) => o && loadNotes()}>
               <DropdownMenuTrigger asChild>
                 <button
                   data-testid="notifications-btn"
-                  className="group relative w-10 h-10 rounded-xl border border-[#E2E8F0] bg-white flex items-center justify-center hover:bg-[#F8FAFC] hover:border-[#98CAE4]/80 active:scale-95 transition-all shadow-xs"
+                  className="group relative w-10 h-10 rounded-xl border border-[#E2E8F0] bg-white flex items-center justify-center hover:bg-[#F8FAFC] hover:border-[#98CAE4]/80 active:scale-95 transition-all shadow-xs cursor-pointer"
                 >
                   <Bell className="w-4 h-4 text-slate-600 transition-transform group-hover:rotate-12 duration-200" />
                   {unread > 0 && (
@@ -190,26 +203,38 @@ export default function Layout() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button data-testid="user-menu-btn" className="flex items-center gap-2.5 h-10 px-3 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] hover:border-[#98CAE4]/80 active:scale-95 transition-all shadow-xs cursor-pointer">
-                  <div className="w-6 h-6 rounded-full bg-[#EBF5FA] border border-[#98CAE4]/50 flex items-center justify-center text-xs font-bold text-[#0091FF]">{user?.name?.[0] || "U"}</div>
-                  <span className="hidden sm:block text-sm font-medium text-[#010B1C]">{user?.name || "User"}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white border-[#E2E8F0] shadow-xl rounded-2xl min-w-[210px] p-1.5">
-                <DropdownMenuLabel className="text-xs text-slate-500 font-normal px-2.5 py-2">
-                  <div className="font-semibold text-[#010B1C] text-sm">{user?.name}</div>
-                  <div className="text-[11px] font-mono text-slate-400 truncate mt-0.5">{user?.email}</div>
-                  <Badge className={`mt-1.5 text-[9px] uppercase border px-1.5 py-0 ${ROLE_BADGE[user?.role] || ""}`}>{user?.role}</Badge>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-[#E2E8F0] my-1" />
-                <DropdownMenuItem onClick={doLogout} data-testid="logout-btn" className="text-rose-600 focus:bg-rose-50 focus:text-rose-700 cursor-pointer font-medium rounded-xl px-2.5 py-2 text-xs transition-colors">
-                  <LogOut className="w-4 h-4 mr-2 text-rose-500" /> Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Desktop user profile dropdown (hidden on mobile) */}
+            <div className="hidden md:block">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button data-testid="user-menu-btn" className="flex items-center gap-2.5 h-10 px-3 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] hover:border-[#98CAE4]/80 active:scale-95 transition-all shadow-xs cursor-pointer">
+                    <div className="w-6 h-6 rounded-full bg-[#EBF5FA] border border-[#98CAE4]/50 flex items-center justify-center text-xs font-bold text-[#0091FF]">{user?.name?.[0] || "U"}</div>
+                    <span className="text-sm font-medium text-[#010B1C]">{user?.name || "User"}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white border-[#E2E8F0] shadow-xl rounded-2xl min-w-[210px] p-1.5">
+                  <DropdownMenuLabel className="text-xs text-slate-500 font-normal px-2.5 py-2">
+                    <div className="font-semibold text-[#010B1C] text-sm">{user?.name}</div>
+                    <div className="text-[11px] font-mono text-slate-400 truncate mt-0.5">{user?.email}</div>
+                    <Badge className={`mt-1.5 text-[9px] uppercase border px-1.5 py-0 ${ROLE_BADGE[user?.role] || ""}`}>{user?.role}</Badge>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-[#E2E8F0] my-1" />
+                  <DropdownMenuItem onClick={doLogout} data-testid="logout-btn" className="text-rose-600 focus:bg-rose-50 focus:text-rose-700 cursor-pointer font-medium rounded-xl px-2.5 py-2 text-xs transition-colors">
+                    <LogOut className="w-4 h-4 mr-2 text-rose-500" /> Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Mobile Hamburger menu button on the right */}
+            <button
+              className="md:hidden p-2 rounded-xl border border-[#E2E8F0] bg-white text-slate-600 active:scale-95 hover:bg-[#F8FAFC] transition-all shadow-xs cursor-pointer"
+              onClick={() => setOpen(true)}
+              data-testid="open-menu-btn"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
         </header>
 

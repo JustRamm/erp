@@ -69,8 +69,8 @@ export default function Signup() {
         {/* Top Bar for Form Side */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3195C9] to-[#0091FF] flex items-center justify-center p-2 shadow-xs">
-              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
+            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-[#E2E8F0] flex items-center justify-center p-1.5 shadow-xs">
+              <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-head text-lg font-bold text-[#010B1C]">CARBON &amp; WHALE</span>
           </div>
@@ -256,8 +256,8 @@ export default function Signup() {
         />
         
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center p-2 shadow-md">
-            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain brightness-0 invert" />
+          <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center p-2 shadow-md">
+            <img src="/logo.png" alt="Carbon & Whale Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <span className="font-head text-2xl font-bold tracking-tight block">CARBON &amp; WHALE</span>

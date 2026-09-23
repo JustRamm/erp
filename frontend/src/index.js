@@ -4,6 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@/index.css";
 import App from "@/App";
 
+// Unregister any stale or rogue service worker on localhost that intercepts fetch requests
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister().catch(() => {});
+    }
+  }).catch(() => {});
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,3 +30,4 @@ root.render(
     </QueryClientProvider>
   </React.StrictMode>,
 );
+

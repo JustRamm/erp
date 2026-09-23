@@ -29,10 +29,10 @@ export async function loginUser(email, password) {
       return { token: data.session?.access_token || `auth-token-${data.user.id}`, user };
     }
   } catch (authErr) {
-    console.warn("Supabase Auth API returned error, falling back to database profile verification:", authErr?.message);
+    console.warn("Supabase Auth API returned error, verifying against database profiles:", authErr?.message);
   }
 
-  // 2. Fallback: Authenticate against backend profiles table directly
+  // 2. Fallback: Authenticate against backend profiles table directly in database
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
@@ -41,7 +41,7 @@ export async function loginUser(email, password) {
     .maybeSingle();
 
   if (profileError) {
-    console.error("Error fetching user profile from Supabase:", profileError);
+    console.error("Error fetching user profile from database:", profileError);
     throw new Error(profileError.message || "Authentication error occurred.");
   }
 
