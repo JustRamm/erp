@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { api, formatApiErrorDetail } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
@@ -235,8 +235,14 @@ function OpsPartnerView() {
   const [items, setItems] = useState(null);
   const [status, setStatus] = useState("pending");
   const [busy, setBusy] = useState(false);
-  const load = () => api.get(`/partner/requests?status=${status}`).then((r) => setItems(r.data)).catch(() => setItems([]));
-  useEffect(() => { load(); }, [status]);
+
+  const load = useCallback(() => {
+    api.get(`/partner/requests?status=${status}`).then((r) => setItems(r.data)).catch(() => setItems([]));
+  }, [status]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (!items) {
     return <TableSkeleton rows={4} />;

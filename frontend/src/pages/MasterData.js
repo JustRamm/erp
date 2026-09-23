@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { api, formatApiErrorDetail } from "../lib/api";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
@@ -326,8 +326,15 @@ function SimpleColl({ coll, fields }) {
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const [f, setF] = useState({});
-  const load = () => api.get(`/master/${coll}`).then((r) => setItems(r.data));
-  useEffect(() => { load(); setF({}); }, [coll]);
+
+  const load = useCallback(() => {
+    api.get(`/master/${coll}`).then((r) => setItems(r.data));
+  }, [coll]);
+
+  useEffect(() => {
+    load();
+    setF({});
+  }, [load]);
   const create = async () => {
     if (!f.name) return toast.error("Name is required");
     try { await api.post(`/master/${coll}`, f); toast.success("Entity registered"); setOpen(false); setF({}); load(); }
